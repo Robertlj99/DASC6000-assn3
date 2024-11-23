@@ -1,0 +1,751 @@
+---
+title: "DASC 6000: Written Assignment 03 (Discrete Random Variables)"
+author: "Your Name"
+date: today
+format:
+  html:
+    embed-resources: true
+    toc: true
+    toc-depth: 2
+    toc-expand: 2
+    toc-title: Contents
+    toc-location: right
+    number-sections: true
+    number-depth: 2
+    html-math-method: katex
+  # tufte::tufte_html: default
+# bibliography: dasc-6000.bib 
+# csl: ieee-with-url.csl
+# linkcolor: red
+# urlcolor: blue
+# link-citations: yes
+---
+
+# Assignment Goal {.unnumbered}
+
+The overarching goal for this assignment is to assess your understanding of PMFs, CDFs, expectation, variance, moments, and momemnt generating functions of random variables.
+
+# Computing PMF 1
+
+Suppose we roll a fair die $n$ times. Let $X_i$ denote the number of spots on the up face on roll, for $i=1,2,3, \ldots, n$. Find the PMF of $Y=\max \left\{X_1, X_2, X_3, \ldots, X_n\right\}$
+
+
+Your answer goes here.
+
+```{r}
+# six equally likely outcomes
+y <-1:6
+# number of times to roll the die
+n <- 1
+# compute PMF for each outcome
+fY <- (y/6)^n - ((y-1)/6)^n
+# print PMF
+print(fY)
+```
+
+```{r}
+# Examine PMF when we roll the die 20 times (I turned this down to 5 just to not have to scroll so far when I render)
+
+# six equally likely outcomes
+y <- 1:6
+# number of times to roll the die
+numRolls <- 5
+for (n in 1:numRolls) {
+    # compute PMF for each outcome
+    fY <- (y/6)^n - ((y-1)/6)^n
+    # print PMF
+    cat (paste0("n = "), n, "\n")
+    print (fY)
+    cat (paste0("\n"))
+    barplot(fY, main = paste("PMF of Y = max(X1, X2, ..., Xn), n =", n), xlab = "Max", ylab = "Probability", col = "blue")
+}
+```
+
+My answer
+
+```{r}
+# Change this to change number of roles
+rolls <- 5
+# Generate all possible outcomes
+sampleSpace <- expand.grid(replicate(rolls, 1:6, simplify = FALSE))
+# Calculate max for each outcome
+sampleSpace$Max <- apply(sampleSpace, 1, max)
+# Calculate frequency of each max
+maxCount <- table(sampleSpace$Max)
+# Calculate PMF
+pmf <- maxCount / nrow(sampleSpace)
+# Print and plot
+print(pmf)
+barplot(pmf, main = paste("PMF of Y = max(X1, X2, ..., Xn), n =", rolls), xlab = "Max", ylab = "Probability", col = "blue")
+```
+
+# Computing PMF 2
+
+A fair green die and a fair red die are tossed together. Let $X$ denote the number of spots showing on the green die and $Y$ denote the number of spots showing on the red die. Find PMF for the following:
+
+
+(a) The sum of the spots showing on the two dice, $X+Y$
+
+    Your answer goes here.
+    
+    ```{r}
+    z <- numeric()
+
+    for (i in 1: 6){
+      for (j in 1: 6){
+        z <- append(z, c(i+j))
+      }
+    }
+    sampleSpace <- matrix(z, nrow=6, ncol=6, byrow=TRUE)
+    print(sampleSpace)
+    ```
+    
+    ```{r}
+    # Count frequency of each sum
+    freq <- table(z)
+    # Compute and print PMF
+    pmf <- freq / length(z)
+    print("PMF of Sum")
+    print(pmf)
+    # Plot PMF
+    barplot(pmf, main = "PMF of Sum", xlab = "Sum", ylab = "Probability", col = "green")
+    ```
+    
+(b) The number of spots showing on the green die minus the number of spots showing on the red die, $X-Y$
+
+    Your answer goes here.
+    
+    ```{r}
+    z <- numeric()
+
+    for (i in 1: 6){
+      for (j in 1: 6){
+        z <- append(z, c(i-j))
+      }
+    }
+    sampleSpace <- matrix(z, nrow=6, ncol=6, byrow=TRUE)
+    print(sampleSpace)
+    ```
+    
+    ```{r}
+    freq <- table(z)
+    pmf <- freq / length(z)
+    print("PMF of Difference")
+    print(pmf)
+    barplot(pmf, main = "PMF of Difference", xlab = "Difference", ylab = "Probability", col = "red")
+    ```
+
+(c) The difference between the spots showing on the two dice, $|X-Y|$
+
+
+    Your answer goes here.
+    
+    ```{r}
+    z <- numeric()
+
+    for (i in 1: 6){
+      for (j in 1: 6){
+        z <- append(z, abs(i-j))
+      }
+    }
+    sampleSpace <- matrix(z, nrow=6, ncol=6, byrow=TRUE)
+    print(sampleSpace)
+    ```
+    
+    ```{r}
+    freq <- table(z)
+    pmf <- freq / length(z)
+    print("PMF of ABS Difference")
+    print(pmf)
+    barplot(pmf, main = "PMF of ABS Difference", xlab = "ABS Difference", ylab = "Probability", col = "pink")
+    ```
+    
+(d) The maximum number of spots showing on a single die, $\max \{X, Y\}$
+
+    Your answer goes here.
+    
+    ```{r}
+    z <- numeric()
+
+    for (i in 1: 6){
+      for (j in 1: 6){
+        z <- append(z, max(i,j))
+      }
+    }
+    sampleSpace <- matrix(z, nrow=6, ncol=6, byrow=TRUE)
+    print(sampleSpace)
+    ```
+    
+    ```{r}
+    freq <- table(z)
+    pmf <- freq / length(z)
+    print("PMF of Single Max")
+    print(pmf)
+    barplot(pmf, main = "PMF of Single Max", xlab = "Max", ylab = "Probability", col = "blue")
+    ```
+
+(e) The minimum number of spots showing on a single die, $\min \{X, Y\}$
+
+    Your answer goes here.
+    
+    ```{r}
+    z <- numeric()
+
+    for (i in 1: 6){
+      for (j in 1: 6){
+        z <- append(z, min(i,j))
+      }
+    }
+    sampleSpace <- matrix(z, nrow=6, ncol=6, byrow=TRUE)
+    print(sampleSpace)
+    ```
+    
+    ```{r}
+    freq <- table(z)
+    pmf <- freq / length(z)
+    print("PMF of Single Min")
+    print(pmf)
+    barplot(pmf, main = "PMF of Single Min", xlab = "Min", ylab = "Probability", col = "yellow")
+    ```
+    
+# Computing PMF 3
+
+Suppose we roll three fair dice simultaneously. Find PMF for the product of the three numbers appearing given that their sum is 5.
+
+
+
+Let us do a Monte Carlo simulation experiment to support the analytic solution.
+
+```{r}
+# warm up exercise
+sampleSpace <- matrix(sample(6, 90, replace = TRUE), nrow =30, ncol=3)
+print(sampleSpace)
+```
+
+
+
+```{r}
+# results of three rolls of a fair die, one million trials
+sampleSpace <- matrix(sample(6, 3000000, replace = TRUE), nrow =1000000, ncol=3)
+```
+
+```{r}
+# how many outcomes in the sample space sum to 5?
+# apply() is essentially a loop, but runs faster than loops
+# the second argument, 1, indicates apply should operate on rows of the matrix
+# the third argument, sum, is the function to apply
+fiveSum = sampleSpace[apply(sampleSpace, 1, sum) == 5, ]
+```
+
+```{r}
+# product of the digits in the favorable outcomes
+prodDigits = apply(fiveSum, 1, prod)
+```
+
+```{r}
+# f(3)
+mean(prodDigits == 3)
+```
+
+```{r}
+# this value (f(4)) is the complement of f(3)
+mean(prodDigits == 4)
+```
+My Answer
+
+```{r}
+sample_space <- expand.grid(x1 = 1:6, x2 = 1:6, x3 = 1:6)
+fiveSum <- sample_space[apply(sample_space, 1, sum) == 5, ]
+fiveSum$Prod <- apply(fiveSum, 1, prod)
+prodCounts <- table(fiveSum$Prod)
+pmf <- prodCounts / nrow(fiveSum)
+print(fiveSum)
+print(pmf)
+barplot(pmf, main = "PMF of Product of Three Dice Given the Sum is 5", xlab = "Product", ylab = "Probability", col = "lightblue")
+```
+
+# Computing PMF 4
+
+Let $X$ be a random variable that takes values from 0 to 9 with equal probability $\frac{1}{10}$.
+
+
+(a) Find the PMF of the random variable $Y=X \bmod (3)$.
+    
+    
+    Your answer goes here.
+    
+    ```{r}
+    for(i in 0:9){
+      cat("\n", i, "mod 3 =", i%%3)
+    }
+    ```
+    
+    ```{r}
+    X <- 0:9
+    Y <- X %% 3
+    yCount <- table(Y)
+    pmf <- yCount / length(X)
+    print(pmf)
+    barplot(pmf, main = "PMF of Y = X mod 3", xlab = "Y", ylab = "Probability", col = "lightgreen")
+    ```
+
+(b) Find the PMF of the random variable $Y=5 \bmod (X+1)$.
+    
+    Your answer goes here.
+    
+    ```{r}
+    for(i in 0:9){
+      cat("\n5 mod", i+1," =", 5%% (i+1))
+    }
+    ```
+    
+```{r}
+    X <- 0:9
+    Y <- 5 %% (X+1)
+    yCount <- table(Y)
+    pmf <- yCount / length(X)
+    print(pmf)
+    barplot(pmf, main = "PMF of Y = 5 mod (X+1)", xlab = "Y", ylab = "Probability", col = "lightyellow")
+    ```
+
+# Computing Probability 1
+
+Let $X$ be a random variable with the following PDF:
+
+$$
+f_X(x) = 2 x, \quad 0<x<1
+$$
+
+Find $P\left(X^2<\frac{1}{4}\right)$
+
+Your answer goes here. Integrals :(
+
+```{r}
+# PDF Function
+f_X <- function(x) {
+  2 * x
+}
+
+# Integral bounds
+lowerBound <- 0
+upperBound <- 1/2
+# Calculate the integral and print
+prob <- integrate(f_X, lowerBound, upperBound)$value
+print(paste("P(X^2 < 1/4) == P(X < 1/2) =", prob))
+```
+
+
+# Computing Probability 2
+
+Consider a random variable $X$ with the following CDF:
+
+$$
+F(x)=\left\{\begin{array}{lr}
+0, & x \leq 0 \\
+1-e^{-(\lambda x)^k,} & x>0
+\end{array}\right.
+$$
+
+where $\lambda$ is a positive scale parameter and $k$ is a positive shape parameter. Assume that $\lambda=0.001$ and $k=2$. Find $P(X>80 \mid X>$ 50). Hint: use the conditional probability definition.
+
+Your answer goes here.
+
+We know $P(X > x) = 1 - F(x)$ and that for x > 0 $F(x) = 1 - e^{-(\lambda x)^k}$ thus: $$P(X > x) = e^{-(\lambda x)^k}$$ 
+
+```{r}
+lambda <- 0.001
+k <- 2
+# Calculate for P(X) > 80
+px_80 <- exp(- (lambda * 80)^k)
+# Calculate for P(X) > 50
+px_50 <- exp(- (lambda * 50)^k)
+# Calculate the conditional probability
+cprob <- px_80 / px_50
+print(paste("P(X > 80) | X > 50) =", cprob))
+```
+
+# Computing CDF 1
+
+Let $F_X(x)$ be the CDF of a random variable $X$. What is the CDF of the random variable $Y=a+b X$, where $a$ and $b$ are constants?
+
+Your answer goes here.
+We know that
+$$
+F_Y(y) = P(Y \leq y) = P(a + bX \leq y)
+$$
+Solve for X:
+if b > 0
+$$X \leq \frac{y-a}{b}$$
+if b < 0
+$$X \geq \frac{y-a}{b}$$
+Solve for the CDF of Y:
+if b > 0
+$$F_Y(y) = P(X \leq \frac{y-a}{b}) = F_X(\frac{y-a}{b})$$
+if b < 0
+$$F_Y(y) = P(X \geq \frac{y-a}{b}) = 1 - F_X(\frac{y-a}{b}) $$
+
+
+# Computing Percentiles
+
+Let $X$ be a random variable with the PMF:
+$$
+f(x)=\frac{x}{10}, \quad x=3,7
+$$
+Find the $64^{\text{th}}$ percentile, $x_{0.64}$.
+
+Your answer goes here.
+
+```{r}
+# Define x and pmf values
+x <- c(3,7)
+pmf <- c(3/10,7/10)
+# Generate CDF
+cdf <- cumsum(pmf)
+# Find the first value of x where the CDF is >= 0.64 (64th percentile) and print
+p_64 <- x[min(which(cdf >= 0.64))]
+print(paste("64th Percentile :", p_64))
+```
+
+
+# Computing Population Median
+
+Let $X$ be a continuous random variable with support $\mathcal{A}=\{x \mid-$ $2<x<4\}$. The quartiles of the distribution of $X$ are: $x_{0.25}=$ $-1, x_{0.5}=0, x_{0.75}=1$. Let $Y$ be the random variable defined as $Y=g(X)=3+|X|$. What is the population median of $Y$ ?
+
+
+3
+
+
+# Computing Expected Value and Variance 1
+
+There are 15 billiard balls numbered $1,2,3, \ldots, 15$ in a bag. Suppose you draw balls sequentially at random and without replacement until either two even-numbered balls or two odd-numbered balls have been drawn. Let $\$ X$ be the number of draws that are required. Find the PMF, $f(x)$. Also, find $E[X]$ and $V[X]$.
+
+Your answer goes here.
+
+
+```{r}
+# warm up to gain insight
+set.seed(2)
+trials <- 10
+x <- numeric(trials)
+print(x)
+
+for (i in 1:trials){
+    # 0s denote even numbered balls and
+    # 1s denote odd numbered balls
+    y <- sample(c(rep(0,7), rep(1,8)), 3)
+    print(y)
+    # two or three draws?
+    if (y[1] == y[2]){
+        x[i] <- 2
+        cat ("only two draws needed ... \n\n")
+    }
+    else {
+        x[i] <- 3
+        cat ("three draws needed... \n\n")
+    }
+}
+print(x)
+```
+
+
+
+```{r}
+# now a large simulation
+set.seed(2)
+trials <- 100000
+x <- numeric(trials)
+
+for (i in 1:trials){
+    # 0s denote even numbered balls and
+    # 1s denote odd numbered balls
+    y <- sample(c(rep(0,7), rep(1,8)), 3)
+    # two or three draws?
+    if (y[1]==y[2]){
+        x[i] <- 2
+    }
+    else {
+        x[i] <- 3
+    }
+}
+
+cat(paste0("Mean of the random variable X (the number of draws needed): ", mean(x), "\n"))
+    
+cat(paste0("\nVariance of the random variable X (the number of draws needed): ", var(x), "\n"))
+```
+
+```{r}
+# Using same seed and trials as you
+set.seed(2)
+trials <- 100000
+results <- numeric(trials)
+
+for (i in 1:trials){
+  balls <- sample(c(rep(0,7), rep(1,8)), 3)
+  if (balls[1]==balls[2]){
+    results[i] <- 2
+  }
+  else{
+    results[i] <- 3
+  }
+}
+
+pmf <- table(results) / trials
+ev <- mean(results)
+variance <- var(results)
+print(paste("E[X] =", ev))
+print(paste("V[X] =", variance))
+print(pmf)
+barplot(pmf, main = "PMF of X (Number of Draws)", xlab = "Number of Draws", ylab = "Probability", col = "orange")
+```
+
+# Computing Expected Value and Variance 2
+
+Let $X$ be a random variable with PMF
+
+$$
+p_X(x)= \begin{cases}x^2 / a, & x=-3,-2,-1,0,1,2,3, \\ 0, & \text { otherwise } \end{cases}
+$$
+
+(a) Find $a$ and $E[X]$.
+    
+We know that $\sum_xpx(x)=1$ plugging in the given values of x we get 
+$$\sum_{x=-3}^{3} \frac{x^2}{a} = \frac{28}{a} = 1$$
+Thus we know that $a = 28$
+
+Rather than calculating the entire pmf we can use the property of symmetry to find the expected value. Given that both X and the pmf are symmetric around x = 0 the expected value $E[X] = 0$
+    
+    
+
+(b) What is the PMF of the random variable $Z=(X-E[X])^2$?
+    
+```{r}
+x <- c(-3,-2,-1,0,1,2,3)
+a <- 28
+pmf_x <- (x^2) / a
+z <- x^2
+z <- unique(z)
+pmf_z <- sapply(z, function(y) sum(pmf_x[z == y]))
+df <- data.frame(Z = z, PMF = pmf_z)
+print(df)
+```
+    
+(c) Using the result from part (b), find the variance of $X$
+    
+    7
+    
+    
+
+(d) Find the variance of $X$ using the formula $\operatorname{var}(X)=\Sigma_X(x-$ $E[X])^2 p_X(x)$.
+    
+```{r}
+ev <- 0
+varianceX <- sum((x - ev)^2 * pmf_x)
+print(paste("V(X) =", varianceX))
+```
+    
+    
+
+
+# Changing the Units of a Random Variable
+
+A city's temperature is modeled as a random variable with mean and standard deviation both equal to 10 degrees Celsius. A day is described as "normal" if the temperature during that day ranges within one standard deviation from the mean. What would be the temperature range for a normal day if temperature were expressed in degrees Fahrenheit? Hint: What is the effect on standard deviation if the units of a random variable are changed?
+
+```{r}
+meanC <- 10
+sdC <- 10
+scaleFactor <- 1.8
+offset <- 32
+meanF <- scaleFactor * meanC + offset
+sdF <- scaleFactor *sdC
+lowerBound <- meanF - sdF
+upperBound <- meanF + sdF
+cat("Temperature Range for Normal Day in Farenheit =", lowerBound, "to", upperBound)
+```
+
+# Moment Generating Function 1
+
+Let $X$ be a random variable with the moment generating function (MGF):
+
+$$
+M(t)=0.2+0.5 e^{3 t}+0.3 e^{8 t}
+$$
+for $-\infty<t<\infty$. Find the PMF of $X$.
+
+```{r}
+print(data.frame(X = c(0,3,8), PMF = c(0.2,0.5,0.3)))
+```
+
+
+# Moment Generating Function 2
+
+Consider a random variable $X$ with the moment generating function:
+
+$$
+M(t)=e^{3 t}, \quad-\infty<t<\infty
+$$
+
+(a) Compute $E[X]$
+    
+    3
+    
+
+(b) Compute $V[X]$
+
+    
+    0
+    
+(c) Find $f(x)$
+
+    
+    3
+    
+
+# Computing Probability
+
+Let $X$ be a random variable and $E[X]=60$ and $V[X]=100$. What probability statement can be made about $P(40<X<80)$?
+
+$$P(40 < X < 80) \geq 0.75$$
+
+# Poisson PMF
+
+A packet communication system consists of a buffer that stores packets from some source, and a communication line that retrieves packets from the buffer and transmits them to a receiver. The system operates in time-slot pairs. In the first slot, the system stores a number of packets that are generated by the source according to a Poisson PMF with parameter $\lambda$; however, the maximum number of packets that can be stored is a given integer $b$, and packets arriving to a full buffer are discarded. In the second slot, the system transmits either all the stored packets or $c$ packets (whichever is less). Here, $c$ is a given integer with $0<c<b$.
+
+
+(a) Assuming that at the beginning of the first slot the buffer is empty, find the PMF of the number of packets stored at the end of the first slot and at the end of the second slot.
+    
+$$
+P(S_1 = s) = \begin{cases}
+\frac{\lambda^{s_1} e^{-\lambda}}{s_1!}, & s_1 = 0,1,\ldots,b-1\\
+1 - \sum_{n=0}^{b-1}\frac{\lambda^ne^{-\lambda}}{n!}, & s_1 = b 
+\end{cases}
+$$
+
+$$
+P(S_2 = 2) = \begin{cases}
+\sum_{s1=0}^{c}\frac{\lambda^{s_1} e^{-\lambda}}{s_1!}, & s2 = 0\\
+P(S_1 = s_2 + c), & s_2 = 1,2,\ldots,b-c
+\end{cases}
+$$
+
+(b) What is the probability that some packets get discarded during the first slot?
+    
+$$
+P(\text{discard}) = 1 - \sum_{n=0}^{b}\frac{\lambda^ne^{-\lambda}}{n!}
+$$
+    
+
+
+# Binomial Distribution
+
+A family has 5 natural children and has adopted 2 girls. Each natural child has equal probability of being a girl or a boy, independent of the other children. Find the PMF of the number of girls out of the 7 children. Hint: use binomial distribution.
+
+
+Your answer goes here.
+
+
+```{r}
+numGirls <- c(2,3,4,5,6,7)
+probability <- choose(5, numGirls-2)*0.5^5
+print(probability)
+print(cumsum(probability))
+```
+
+```{r}
+library(ggplot2)
+numGirls <- c(2,3,4,5,6,7)
+probability <- choose(5, numGirls - 2)* 0.5^5
+ggplot(data = data.frame(x= numGirls, y= probability, yend =rep(2,6)), aes(x=x, y=y, xend =x, yend = yend)) +
+  geom_point() +
+  geom_segment() +
+  scale_x_continuous(name="\nNumber of girls", breaks=2:7, limits = c(1.9, 7.1)) +
+  scale_y_continuous(name="Probability\n", limits = c(0.0,0.35)) +
+  ggtitle("PMF for the number of girls in a family of 7 children") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5), text = element_text(size = 12))
+```
+
+```{r}
+library(ggplot2)
+n <- 5
+p <- 0.5
+x <- 0:n
+pmf <- dbinom(x, size = n, prob = p)
+girls <- x + 2
+df = data.frame(G = girls, PMF = pmf)
+ggplot(df, aes(x = factor(G), y = PMF)) +
+  geom_bar(stat = "identity", fill = "black") +
+  labs(title = "PMF of # of Girls", x = "# of Girls", y = "Probability") +
+  theme_dark()
+```
+# Binomial Random Variable
+
+Consider a binomial random variable $X$ with parameters $n$ and $p$. Let $k^*$ be the largest integer that is less than or equal to $(n+1) p$. Show that the PMF $p_X(k)$ is monotonically nondecreasing with $k$ in the range from 0 to $k^*$, and is monotonically decreasing with $k$ for $k \geq k^*$.  **Hint**: compute the quotient of $p_X(k)$ and $p_X(k-1)$ and the quotient is $>1$, then it is monotonically increasing; and if the quotient is $<1$, it is monotonically decreasing.
+
+
+I'm not sure how to show this
+
+# Poisson Random Variable
+
+Let $X$ be a Poisson random variable with parameter $\lambda$. Show that the PMF $p_X(k)$ increases monotonically with $k$ up to the point where $k$ reaches the largest integer not exceeding $\lambda$, and after that point decreases monotonically with $k$. Hint: Compute the quotient of $p_X(k)$ and $p_X(k-1)$ to see the range of $k$ where $p_X(k)$ is increasing or decreasing.
+
+Your answer goes here.
+
+# Poisson Approximation
+
+An internet service provider uses 50 modems to serve the needs of 1000 customers. It is estimated that at a given time, each customer will need a connection with probability 0.01, independent of the other customers.
+
+(a) What is the PMF of the number of modems in use at the given time? Also, plot the PMF.
+    
+    Your answer goes here.
+    
+    ```{r}
+    trials <- 1000
+    p <- 0.01
+    x <- 0:trials
+    plot(x, dbinom(x, size = trials, prob = p), xlim=c(0,50), xlab="Number of connections", ylab="Probability", main = "PMF of Bin(1000,0.01)", pch = 20)
+    ```
+    
+(b) Repeat part (a) by approximating the PMF of the number of customers that need a connection with a Poisson PMF. Also, plot the PMF.
+    
+    Your answer goes here.
+    
+    ```{r}
+    trials <- 1000
+    p <- 0.01
+    lambda = trials * p
+    x <- 0:trials
+    plot(x, dpois(x, lambda), xlim=c(0,50), xlab="Number of connections", ylab="Probability", main = "PMF of Poisson(1000, 0.01)", pch=20)
+    ```
+    
+(c) What is the probability that there are more customers needing a connection than there are modems? Provide an exact as well as an approximate formula based on the Poisson approximation of part (b). Plot PMFs for both exact and approximate solutions. Hint: use Binomial distribution.
+    
+    Your answer goes here.
+    
+    ```{r}
+    # exact Binomial probability
+    options(digits=22)
+    trials <- 1000
+    p <- 0.01
+    successes <- 50
+    p <- 1 - pbinom(50,1000,0.01)
+    cat("Probability that more customers need a modem than that are available:", p)
+    ```
+    
+    ```{r}
+    # Poisson approximation probability
+    options(digits=22)
+    trials <- 1000
+    p <- 0.01
+    lambda = trials * p
+    # upper tail
+    # prob <- ppois(50, lambda, lower=FALSE)
+    prob = 1 - ppois(50,lambda)
+    cat("Probability that more customers need a modem than that are available:", prob)
+    ```
+
+
+
+
+
+
+
